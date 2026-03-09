@@ -69,6 +69,10 @@ if (isset($_SESSION['role'])) {
 
             <button type="submit" class="btn-primary auth-btn">Sign In</button>
         </form>
+
+        <div style="text-align:center; margin-top:1.5rem; font-size:0.875rem; color:hsl(var(--muted-foreground));">
+            Don't have an account? <a href="register.php" style="color:hsl(var(--primary)); font-weight:500;">Sign Up</a>
+        </div>
     </div>
 </div>
 

@@ -347,7 +347,7 @@
     </div>
     <div class="nav-actions">
         <a href="auth/login.php" class="btn-ghost">Sign In</a>
-        <a href="auth/login.php" class="btn-primary btn-lg" style="font-size:0.875rem; padding: 0.5rem 1.25rem;">Get Started</a>
+        <a href="auth/register.php" class="btn-primary btn-lg" style="font-size:0.875rem; padding: 0.5rem 1.25rem;">Get Started</a>
     </div>
 </nav>
 
@@ -359,7 +359,7 @@
     <h1>Buy smarter.<br><span>Spend less.</span> Cook better.</h1>
     <p>KitchenCart connects restaurants with verified vendors — compare daily raw material prices, place orders instantly, and track every delivery in one place.</p>
     <div class="hero-actions">
-        <a href="auth/login.php" class="btn-primary btn-lg">
+        <a href="auth/register.php" class="btn-primary btn-lg">
             <i class="ph ph-arrow-right" style="margin-right: 0.5rem;"></i> Start Ordering
         </a>
         <a href="#how-it-works" class="btn-ghost btn-lg" style="border: 1px solid hsl(var(--border));">
@@ -464,7 +464,7 @@
 <div class="cta-section">
     <h2>Ready to transform your procurement?</h2>
     <p>Join restaurants already saving time and money with KitchenCart every day.</p>
-    <a href="auth/login.php" class="btn-white">
+    <a href="auth/register.php" class="btn-white">
         <i class="ph ph-arrow-right" style="margin-right: 0.5rem;"></i> Get Started Now
     </a>
 </div>
