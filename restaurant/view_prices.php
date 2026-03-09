@@ -38,15 +38,18 @@ $result = mysqli_query($conn, $query);
 
 <div class="container">
 
-    <h1>Daily Prices</h1>
-    <p class="subtitle">
-        Compare today’s prices with historical trends.
-    </p>
+    <div class="page-header">
+        <h1 class="page-title">Daily Prices</h1>
+        <p class="page-subtitle">
+            Compare today’s prices with historical trends.
+        </p>
+    </div>
 
     <!-- CARD START -->
-    <div class="card">
+    <div class="card-elevated">
 
-        <table>
+        <div class="table-wrapper">
+            <table>
             <tr>
                 <th>Product</th>
                 <th>Vendor</th>
@@ -73,51 +76,52 @@ while ($bp = mysqli_fetch_assoc($bestResult)) {
 }
                 while ($row = mysqli_fetch_assoc($result)) {
 
-                    $trend = "<span class='stable'>⏺ Stable</span>";
+                        $trend = "<div class='trend stable'><i class='ph ph-minus'></i> Stable</div>";
 
-                    if ($row['yesterday_price'] !== null) {
-                        if ($row['today_price'] > $row['yesterday_price']) {
-                            $trend = "<span class='up'>🔺 Increased</span>";
-                        } elseif ($row['today_price'] < $row['yesterday_price']) {
-                            $trend = "<span class='down'>🔻 Decreased</span>";
+                        if ($row['yesterday_price'] !== null) {
+                            if ($row['today_price'] > $row['yesterday_price']) {
+                                $trend = "<div class='trend up'><i class='ph ph-trend-up'></i> Increased</div>";
+                            } elseif ($row['today_price'] < $row['yesterday_price']) {
+                                $trend = "<div class='trend down'><i class='ph ph-trend-down'></i> Decreased</div>";
+                            }
                         }
-                    }
 
-                    $isBest = ($row['today_price'] == $bestPrices[$row['product_id']]);
-$trClass = $isBest ? "class='best'" : "";
+                        $isBest = ($row['today_price'] == $bestPrices[$row['product_id']]);
 
-echo "<tr $trClass>";
+                        echo "<tr>";
                     echo "<td>{$row['product_name']}</td>";
                     echo "<td>{$row['vendor_name']}</td>";
-                    echo "<td>₹{$row['today_price']}";
-if ($isBest) {
-    echo "<span class='badge'>Best Price</span>";
-}
-echo "</td>";
-                    echo "<td>" . ($row['yesterday_price'] ?? '-') . "</td>";
-                    echo "<td>$trend</td>";
-                    echo "<td>
-                            <form action='place_order.php' method='POST' style='margin:0;display:flex;gap:5px;align-items:center;'>
-                                <input type='hidden' name='product_id' value='{$row['product_id']}'>
-                                <input type='hidden' name='vendor_id' value='{$row['vendor_id']}'>
-                                <input type='hidden' name='price' value='{$row['today_price']}'>
-                                <input type='number' name='quantity' value='1' min='1' style='width:60px;padding:3px;' required>
-                                <button type='submit' class='btn btn-order'>Order</button>
-                            </form>
-                          </td>";
-                    echo "</tr>";
+                        echo "<td><strong>₹{$row['today_price']}</strong>";
+    if ($isBest) {
+        echo "<span class='badge badge-best-price'>Best Price</span>";
+    }
+    echo "</td>";
+                        echo "<td>" . ($row['yesterday_price'] ?? '-') . "</td>";
+                        echo "<td>$trend</td>";
+                        echo "<td>
+                                <form action='place_order.php' method='POST' style='margin:0;display:flex;gap:0.5rem;align-items:center;'>
+                                    <input type='hidden' name='product_id' value='{$row['product_id']}'>
+                                    <input type='hidden' name='vendor_id' value='{$row['vendor_id']}'>
+                                    <input type='hidden' name='price' value='{$row['today_price']}'>
+                                    <input type='number' name='quantity' class='input-base' value='1' min='1' style='width:70px; padding:0.25rem 0.5rem;' required>
+                                    <button type='submit' class='btn-primary btn-sm'>Order</button>
+                                </form>
+                              </td>";
+                        echo "</tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='6'>No price data available</td></tr>";
                 }
-            } else {
-                echo "<tr><td colspan='6'>No price data available</td></tr>";
-            }
-            ?>
+                ?>
 
-        </table>
+            </table>
+        </div>
 
     </div>
     <!-- CARD END -->
 
 </div>
-
+</main>
+</div>
 </body>
 </html>

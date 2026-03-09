@@ -59,26 +59,29 @@ $result = mysqli_stmt_get_result($stmt);
 
 <div class="container">
 
-    <h1>Incoming Orders</h1>
-    <p class="subtitle">
-        Manage and update orders placed by restaurants.
-    </p>
+    <div class="page-header">
+        <h1 class="page-title">Incoming Orders</h1>
+        <p class="page-subtitle">
+            Manage and update orders placed by restaurants.
+        </p>
+    </div>
 
     <!-- CARD START -->
-    <div class="card">
+    <div class="card-elevated">
         
         <?php
         if (isset($_SESSION['success_msg'])) {
-            echo "<p style='color:green; font-weight:bold; margin-bottom:15px;'>" . $_SESSION['success_msg'] . "</p>";
+            echo "<div class='alert alert-success'>" . $_SESSION['success_msg'] . "</div>";
             unset($_SESSION['success_msg']);
         }
         if (isset($_SESSION['error_msg'])) {
-            echo "<p style='color:red; font-weight:bold; margin-bottom:15px;'>" . $_SESSION['error_msg'] . "</p>";
+            echo "<div class='alert alert-error'>" . $_SESSION['error_msg'] . "</div>";
             unset($_SESSION['error_msg']);
         }
         ?>
 
-        <table>
+        <div class="table-wrapper">
+            <table>
             <tr>
                 <th>Order ID</th>
                 <th>Product</th>
@@ -106,14 +109,14 @@ $result = mysqli_stmt_get_result($stmt);
                     echo "<td>" . date('Y-m-d H:i', strtotime($row['order_date'])) . "</td>";
                     echo "<td>{$statusLabel}</td>";
                     echo "<td>
-                            <form method='POST' style='margin:0; display:flex; gap:5px; align-items:center;'>
+                            <form method='POST' style='margin:0; display:flex; gap:0.5rem; align-items:center;'>
                                 <input type='hidden' name='order_id' value='{$row['order_id']}'>
-                                <select name='status' style='padding:5px; border-radius:4px;'>
+                                <select name='status' class='input-base' style='width: auto; padding-top: 0.25rem; padding-bottom: 0.25rem;'>
                                     <option value='Pending' " . ($row['status'] == 'Pending' ? 'selected' : '') . ">Pending</option>
                                     <option value='Accepted' " . ($row['status'] == 'Accepted' ? 'selected' : '') . ">Accepted</option>
                                     <option value='Delivered' " . ($row['status'] == 'Delivered' ? 'selected' : '') . ">Delivered</option>
                                 </select>
-                                <button type='submit' name='update_status' class='btn btn-order'>Update</button>
+                                <button type='submit' name='update_status' class='btn-primary btn-sm'>Update</button>
                             </form>
                           </td>";
                     echo "</tr>";
@@ -123,21 +126,14 @@ $result = mysqli_stmt_get_result($stmt);
             }
             ?>
 
-        </table>
+            </table>
+        </div>
 
     </div>
     <!-- CARD END -->
 
 </div>
-
-<style>
-.badge.status-pending { background-color: #f39c12; color: #fff; }
-.badge.status-accepted { background-color: #3498db; color: #fff; }
-.badge.status-delivered { background-color: #2ecc71; color: #fff; }
-.btn-order { background-color: #27ae60; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
-.btn-order:hover { background-color: #2ecc71; }
-select { border: 1px solid #ccc; outline: none; }
-</style>
-
+</main>
+</div>
 </body>
 </html>

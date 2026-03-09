@@ -37,26 +37,29 @@ $result = mysqli_stmt_get_result($stmt);
 
 <div class="container">
 
-    <h1>My Orders</h1>
-    <p class="subtitle">
-        History of all orders placed by your restaurant.
-    </p>
+    <div class="page-header">
+        <h1 class="page-title">My Orders</h1>
+        <p class="page-subtitle">
+            History of all orders placed by your restaurant.
+        </p>
+    </div>
 
     <!-- CARD START -->
-    <div class="card">
+    <div class="card-elevated">
         
         <?php
         if (isset($_SESSION['success_msg'])) {
-            echo "<p style='color:green; font-weight:bold; margin-bottom:15px;'>" . $_SESSION['success_msg'] . "</p>";
+            echo "<div class='alert alert-success'>" . $_SESSION['success_msg'] . "</div>";
             unset($_SESSION['success_msg']);
         }
         if (isset($_SESSION['error_msg'])) {
-            echo "<p style='color:red; font-weight:bold; margin-bottom:15px;'>" . $_SESSION['error_msg'] . "</p>";
+            echo "<div class='alert alert-error'>" . $_SESSION['error_msg'] . "</div>";
             unset($_SESSION['error_msg']);
         }
         ?>
 
-        <table>
+        <div class="table-wrapper">
+            <table>
             <tr>
                 <th>Order ID</th>
                 <th>Product</th>
@@ -91,20 +94,14 @@ $result = mysqli_stmt_get_result($stmt);
             }
             ?>
 
-        </table>
+            </table>
+        </div>
 
     </div>
     <!-- CARD END -->
 
 </div>
-
-<style>
-.badge.status-pending { background-color: #f39c12; color: #fff; }
-.badge.status-accepted { background-color: #3498db; color: #fff; }
-.badge.status-delivered { background-color: #2ecc71; color: #fff; }
-.btn-order { background-color: #27ae60; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
-.btn-order:hover { background-color: #2ecc71; }
-</style>
-
+</main>
+</div>
 </body>
 </html>
