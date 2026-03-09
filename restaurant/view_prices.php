@@ -12,7 +12,9 @@ include "../includes/header.php";
 /* Query with yesterday price */
 $query = "
 SELECT 
+    p.product_id,
     p.product_name,
+    v.vendor_id,
     v.vendor_name,
     d.price AS today_price,
     d.price_date,
@@ -51,6 +53,7 @@ $result = mysqli_query($conn, $query);
                 <th>Today Price</th>
                 <th>Yesterday</th>
                 <th>Trend</th>
+                <th>Action</th>
             </tr>
 
             <?php
@@ -93,10 +96,19 @@ if ($isBest) {
 echo "</td>";
                     echo "<td>" . ($row['yesterday_price'] ?? '-') . "</td>";
                     echo "<td>$trend</td>";
+                    echo "<td>
+                            <form action='place_order.php' method='POST' style='margin:0;display:flex;gap:5px;align-items:center;'>
+                                <input type='hidden' name='product_id' value='{$row['product_id']}'>
+                                <input type='hidden' name='vendor_id' value='{$row['vendor_id']}'>
+                                <input type='hidden' name='price' value='{$row['today_price']}'>
+                                <input type='number' name='quantity' value='1' min='1' style='width:60px;padding:3px;' required>
+                                <button type='submit' class='btn btn-order'>Order</button>
+                            </form>
+                          </td>";
                     echo "</tr>";
                 }
             } else {
-                echo "<tr><td colspan='5'>No price data available</td></tr>";
+                echo "<tr><td colspan='6'>No price data available</td></tr>";
             }
             ?>
 

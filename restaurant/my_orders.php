@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] != 'vendor') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] != 'restaurant') {
     header("Location: ../auth/login.php");
     exit;
 }
@@ -9,49 +9,27 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'vendor') {
 include "../config/db.php";
 include "../includes/header.php";
 
-$vendor_id = $_SESSION['user_id'];
+$restaurant_id = $_SESSION['user_id'];
 
-// Handle order status update
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
-    $order_id = $_POST['order_id'];
-    $new_status = $_POST['status'];
-    
-    $update_query = "UPDATE orders SET status = ? WHERE order_id = ? AND vendor_id = ?";
-    $stmt = mysqli_prepare($conn, $update_query);
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "sii", $new_status, $order_id, $vendor_id);
-        if (mysqli_stmt_execute($stmt)) {
-            $_SESSION['success_msg'] = "Order #{$order_id} status updated to {$new_status}.";
-        } else {
-            $_SESSION['error_msg'] = "Failed to update order status.";
-        }
-        mysqli_stmt_close($stmt);
-    }
-    
-    // Redirect to prevent form resubmission
-    header("Location: view_orders.php");
-    exit;
-}
-
-// Fetch vendor's orders
 $query = "
 SELECT 
     o.order_id,
     p.product_name,
-    u.name AS restaurant_name,
+    v.vendor_name,
     o.quantity,
     o.price,
+    (o.quantity * o.price) as total_price,
     o.order_date,
     o.status
 FROM orders o
 JOIN products p ON o.product_id = p.product_id
-JOIN users u ON o.restaurant_id = u.user_id
-WHERE o.vendor_id = ?
+JOIN vendors v ON o.vendor_id = v.vendor_id
+WHERE o.restaurant_id = ?
 ORDER BY o.order_date DESC
 ";
 
 $stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, "i", $vendor_id);
+mysqli_stmt_bind_param($stmt, "i", $restaurant_id);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
@@ -59,9 +37,9 @@ $result = mysqli_stmt_get_result($stmt);
 
 <div class="container">
 
-    <h1>Incoming Orders</h1>
+    <h1>My Orders</h1>
     <p class="subtitle">
-        Manage and update orders placed by restaurants.
+        History of all orders placed by your restaurant.
     </p>
 
     <!-- CARD START -->
@@ -82,12 +60,12 @@ $result = mysqli_stmt_get_result($stmt);
             <tr>
                 <th>Order ID</th>
                 <th>Product</th>
-                <th>Restaurant</th>
+                <th>Vendor</th>
                 <th>Quantity</th>
                 <th>Unit Price</th>
+                <th>Total</th>
                 <th>Date</th>
                 <th>Status</th>
-                <th>Update Status</th>
             </tr>
 
             <?php
@@ -100,26 +78,16 @@ $result = mysqli_stmt_get_result($stmt);
                     echo "<tr>";
                     echo "<td>#{$row['order_id']}</td>";
                     echo "<td>{$row['product_name']}</td>";
-                    echo "<td>{$row['restaurant_name']}</td>";
+                    echo "<td>{$row['vendor_name']}</td>";
                     echo "<td>{$row['quantity']}</td>";
                     echo "<td>₹{$row['price']}</td>";
+                    echo "<td>₹{$row['total_price']}</td>";
                     echo "<td>" . date('Y-m-d H:i', strtotime($row['order_date'])) . "</td>";
                     echo "<td>{$statusLabel}</td>";
-                    echo "<td>
-                            <form method='POST' style='margin:0; display:flex; gap:5px; align-items:center;'>
-                                <input type='hidden' name='order_id' value='{$row['order_id']}'>
-                                <select name='status' style='padding:5px; border-radius:4px;'>
-                                    <option value='Pending' " . ($row['status'] == 'Pending' ? 'selected' : '') . ">Pending</option>
-                                    <option value='Accepted' " . ($row['status'] == 'Accepted' ? 'selected' : '') . ">Accepted</option>
-                                    <option value='Delivered' " . ($row['status'] == 'Delivered' ? 'selected' : '') . ">Delivered</option>
-                                </select>
-                                <button type='submit' name='update_status' class='btn btn-order'>Update</button>
-                            </form>
-                          </td>";
                     echo "</tr>";
                 }
             } else {
-                echo "<tr><td colspan='8'>No incoming orders found.</td></tr>";
+                echo "<tr><td colspan='8'>No orders found.</td></tr>";
             }
             ?>
 
@@ -136,7 +104,6 @@ $result = mysqli_stmt_get_result($stmt);
 .badge.status-delivered { background-color: #2ecc71; color: #fff; }
 .btn-order { background-color: #27ae60; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
 .btn-order:hover { background-color: #2ecc71; }
-select { border: 1px solid #ccc; outline: none; }
 </style>
 
 </body>

@@ -1,44 +1,40 @@
 <?php
 session_start();
-include "../config/db.php";
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] != 'restaurant') {
     header("Location: ../auth/login.php");
     exit;
 }
-?>
 
-<h2>Place Order</h2>
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    include "../config/db.php";
 
-<form method="post">
-    Product ID: <input type="number" name="product_id" required><br><br>
-    Vendor ID: <input type="number" name="vendor_id" required><br><br>
-    Quantity: <input type="number" name="qty" required><br><br>
-    Price per unit: <input type="number" step="0.01" name="price" required><br><br>
-    <button type="submit">Place Order</button>
-</form>
-
-<?php
-if ($_POST) {
-    $restaurant_id = 1; // test restaurant
-    $vendor_id = $_POST['vendor_id'];
+    $restaurant_id = $_SESSION['user_id'];
     $product_id = $_POST['product_id'];
-    $qty = $_POST['qty'];
+    $vendor_id = $_POST['vendor_id'];
     $price = $_POST['price'];
-    $today = date('Y-m-d');
+    $quantity = $_POST['quantity'];
 
-    mysqli_query($conn,
-        "INSERT INTO orders (restaurant_id, vendor_id, order_date)
-         VALUES ($restaurant_id, $vendor_id, '$today')"
-    );
-
-    $order_id = mysqli_insert_id($conn);
-
-    mysqli_query($conn,
-        "INSERT INTO order_items (order_id, product_id, quantity, price)
-         VALUES ($order_id, $product_id, $qty, $price)"
-    );
-
-    echo "Order placed successfully!";
+    $query = "INSERT INTO orders (restaurant_id, vendor_id, product_id, quantity, price) VALUES (?, ?, ?, ?, ?)";
+    $stmt = mysqli_prepare($conn, $query);
+    
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, "iiidi", $restaurant_id, $vendor_id, $product_id, $quantity, $price);
+        
+        if (mysqli_stmt_execute($stmt)) {
+            $_SESSION['success_msg'] = "Order placed successfully!";
+        } else {
+            $_SESSION['error_msg'] = "Failed to place order.";
+        }
+        mysqli_stmt_close($stmt);
+    } else {
+        $_SESSION['error_msg'] = "Database error.";
+    }
+    
+    header("Location: my_orders.php");
+    exit;
+} else {
+    header("Location: view_prices.php");
+    exit;
 }
 ?>
